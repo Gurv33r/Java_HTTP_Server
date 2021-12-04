@@ -1,7 +1,7 @@
 package cs158.com.company;
 import java.io.*;
 import java.net.*;
-import java.nio.charset.StandardCharsets;
+import java.nio.channels.*;
 import java.util.Scanner;
 
 
@@ -14,33 +14,25 @@ public class Client {
         System.out.println("Enter file you want to get: ");
         String requestedFile = scanner.nextLine(); // grab file request
         final int PORT = 80;
-
+        File file = new File("local/" + requestedFile); // make file object
         try {
-            URL myurl = new URL("http://localhost:" + PORT + "/" + requestedFile);
-            System.out.println("Sending GET request to " + myurl);
-            InputStream res = myurl.openStream();
+            URL url = new URL("http://localhost:" + PORT + "/" + requestedFile);
+            System.out.println("Sending GET request to " + url);
+            //InputStream res = myurl.openStream();
             //prepare file to save to
-            File file = new File("local/" + requestedFile);
-            file.getParentFile().mkdirs();
-            file.createNewFile();
+            file.getParentFile().mkdir(); // make local directory if it doesn't exist
+            file.createNewFile(); // make
             //create writer
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file,false));
             System.out.println("Response Received:");
-            //save the file
-            try (BufferedReader in = new BufferedReader(
-                    new InputStreamReader(res, StandardCharsets.UTF_8))) {
-                //write in line by line
-                String line;
-                while ((line = in.readLine()) != null) {
-                    writer.write(line);
-                    writer.flush();
-                    System.out.println(line);
-                }
-            }
-            //end save
-            writer.close();
-            System.out.println("Saved to "+ file.getCanonicalPath()); // print save path
+            // send request
+            ReadableByteChannel byteChannel = Channels.newChannel(url.openStream());
+            // setup file saver
+            FileOutputStream fileOutputStream = new FileOutputStream(file.getPath());
+            FileChannel fileChannel = fileOutputStream.getChannel();
+            // transfer file info
+            fileChannel.transferFrom(byteChannel, 0, Long.MAX_VALUE);
         } catch(Exception e){
+            file.deleteOnExit();
             e.printStackTrace();
         }
     }

@@ -6,7 +6,7 @@ import java.nio.file.Files;
 public class Server{
     public static void main(String[] args) throws IOException {
         ServerSocket serversocket = new ServerSocket(80); // establish HTTP receiver socket
-        System.out.println("Socket created on " + InetAddress.getLocalHost() + "/" + serversocket.getLocalPort());
+        System.out.println("Server running " + InetAddress.getLocalHost() + ":" + serversocket.getLocalPort());
         final String CRLF = "\r\n";
         try {
             // boot up server
