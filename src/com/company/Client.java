@@ -7,8 +7,6 @@ import java.util.Scanner;
 
 //simulates client.
 public class Client {
-    private static HttpURLConnection con;
-
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter file you want to get: ");
@@ -18,21 +16,19 @@ public class Client {
         try {
             URL url = new URL("http://localhost:" + PORT + "/" + requestedFile);
             System.out.println("Sending GET request to " + url);
-            //InputStream res = myurl.openStream();
+            // send request and open response
+            ReadableByteChannel byteChannel = Channels.newChannel(url.openStream());
             //prepare file to save to
             file.getParentFile().mkdir(); // make local directory if it doesn't exist
             file.createNewFile(); // make
             //create writer
             System.out.println("Response Received:");
-            // send request
-            ReadableByteChannel byteChannel = Channels.newChannel(url.openStream());
             // setup file saver
             FileOutputStream fileOutputStream = new FileOutputStream(file.getPath());
             FileChannel fileChannel = fileOutputStream.getChannel();
-            // transfer file info
+            // transfer file info from response
             fileChannel.transferFrom(byteChannel, 0, Long.MAX_VALUE);
         } catch(Exception e){
-            file.deleteOnExit();
             e.printStackTrace();
         }
     }
