@@ -40,9 +40,6 @@ public class Client {
             //end save
             writer.close();
             System.out.println("Saved to "+ file.getCanonicalPath()); // print save path
-        } catch (FileNotFoundException e) {
-            System.out.println(requestedFile + " Not found!");
-            e.printStackTrace();
         } catch(Exception e){
             e.printStackTrace();
         }
